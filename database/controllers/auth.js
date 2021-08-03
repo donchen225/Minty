@@ -5,7 +5,7 @@ const keys = require('../../configs/keys');
 const { OAuth2Client } = require('google-auth-library');
 const client = new OAuth2Client(keys.GOOGLE_CLIENT_ID);
 
-// @route   POST api/users
+// @route   POST /users
 // @desc    Signup user and create new user profile
 // @access  Public
 exports.register = async (req, res, next) => {
@@ -13,7 +13,7 @@ exports.register = async (req, res, next) => {
         // Create and save user document
         const user = new User(req.body);
         await user.save();
-        // Send email to verify user
+        // Send verification email to user
         await sendVerificationEmail(user, req, res);
     } 
     catch (err) {
@@ -41,7 +41,7 @@ exports.login = async (req, res, next) => {
 }
 
 // ===EMAIL VERIFICATION
-// @route GET api/verify/:token
+// @route GET /verify/:token
 // @desc Verify user
 // @access Public
 exports.verify = async (req, res, next) => {
@@ -52,7 +52,7 @@ exports.verify = async (req, res, next) => {
         
         if (!token) return res.status(400).json({ message: 'We were unable to find a valid token. Your token my have expired.' });
         // Find user with given user id 
-        User.findOne({ _id: token.userId }, (err, user) => {
+        await User.findOne({ _id: token.userId }, (user) => {
             if (!user) return res.status(400).json({ message: 'We were unable to find a user for this token.' });
             // Make sure the user is not already verified
             if (user.isVerified) return res.status(400).json({ message: 'This user has already been verified.' });
@@ -65,13 +65,17 @@ exports.verify = async (req, res, next) => {
                 res.status(200).send("The account has been verified. Please log in.");
             });
         });
+        // Delete all token documents with given user id from database
+        Token.deleteMany({ _id: token.userId }, (err) => {
+            if (err) return res.status(500).json({ message: err.message });
+        });
     } catch (err) {
         next(err)
     }
 }
 
-// @route POST api/resend
-// @desc Resend Verification Token
+// @route POST /auth/resend
+// @desc Resend Verification Email
 // @access Public
 exports.resendToken = async (req, res, next) => {
     try {
@@ -90,7 +94,7 @@ exports.resendToken = async (req, res, next) => {
     }
 };
 
-// This async function will be used to generate verification token and send verification email 
+// This async function will be used to generate a verification token for a user and send a verification email to their email
 async function sendVerificationEmail (user, req, res) {
     console.log("sendVerificationEmail is called");
     try {
@@ -144,46 +148,53 @@ exports.googleAuth = async (req, res, next) => {
     }
 }
 
-// @route   POST api/users/logout
-// @desc    Remove currently authenticated user's current session token from user's tokens array 
+// @route   POST /users/logout
+// @desc    Logout currently authenticated user of current session
 // @access  Private
 exports.logout = async (req, res, next) => {
-    try { // No need to fetch user again as user has already been set to req object when auth was called
+    try { // No need to fetch user again as currently authenticated user has already been set to req object when auth was called
         console.log("req token", req.token);
-        req.user.tokens = req.user.tokens.filter((token) => { // This will remove current session token from tokens' array
+        // This will remove the currently authenticated user's current session token from the user's tokens' array
+        req.user.tokens = req.user.tokens.filter((token) => {
             return token.token !== req.token; 
         })
-        await req.user.save(); // This will update user document in database    
+        // This will update user document in database    
+        await req.user.save();
         res.status(201).send({ success: true });
     } catch (err) {
         next(err);
     }
 }
 
-// @route   POST api/auth/remove
-// @desc    Remove user's current session token from user's tokens array
+// @route   POST /auth/remove
+// @desc    Logout a specific user of a specific session
 // @access  Public
 exports.removeAuthToken = async (req, res, next) => {
     try { 
         const { auth_token, id_token } = req.body;
-        const user = await User.findOne({ _id: id_token }); // Fetch user from database
-        user.tokens = user.tokens.filter((token) => { // This will remove current session token from tokens' array
+        // Fetch user from database
+        const user = await User.findOne({ _id: id_token }); 
+        // This will remove a user's current session token from their tokens' array
+        user.tokens = user.tokens.filter((token) => { 
             return token.token !== auth_token; 
         });
-        await user.save(); // This will update user document in database    
+        // This will update user document in database 
+        await user.save();
         res.status(201).send({ success: true });
     } catch (err) {
         next(err);
     }
 }
 
-// @route   POST api/users/logoutAll
-// @desc    Remove all of user's session tokens from user's tokens array
+// @route   POST /users/logoutAll
+// @desc    Logout currently authenticated user of all sessions
 // @access  Private
 exports.logoutAll = async (req, res, next) => {
     try {
-        req.user.tokens = []; // This will set tokens' array to empty array 
-        await req.user.save(); // This will update user document in database 
+        // This will remove all of the currently authentictaed user's session tokens from their tokens' array
+        req.user.tokens = [];
+         // This will update user document in database 
+        await req.user.save();
         res.status(201).send({ success: true });
     } catch (e) {
         next(err);

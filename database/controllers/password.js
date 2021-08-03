@@ -2,7 +2,7 @@ const User = require('../models/user');
 const { sendEmail } = require('../utils/index');
 const keys = require('../../configs/keys');
 
-// @route POST api/auth/recover
+// @route POST /auth/recover
 // @desc Recover Password - Generate password reset token and send password reset email
 // @access Public
 exports.recover = async (req, res) => {
@@ -38,7 +38,7 @@ exports.recover = async (req, res) => {
     }
 };
 
-// @route GET api/auth/reset/:token
+// @route GET /auth/reset/:token
 // @desc Validate password reset token and show the password reset view
 // @access Public
 exports.reset = async (req, res) => {
@@ -56,8 +56,8 @@ exports.reset = async (req, res) => {
     }
 };
 
-// @route POST api/auth/reset/:token
-// @desc Reset Password
+// @route POST /auth/reset/:token
+// @desc Confirm and reset password
 // @access Public
 exports.resetPassword = async (req, res) => {
     try {

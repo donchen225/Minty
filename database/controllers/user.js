@@ -1,14 +1,14 @@
 const User = require('../models/user');
 const { uploader, sendEmail } = require('../utils/index');
 
-// @route   GET api/users/me
+// @route   GET /users/me
 // @desc    Read profile of currently authenticated user
 // @access  Private
 exports.fetch = async (req, res) => { // This will run auth middleware first then if next was called, run route handler 
     res.send({ user: req.user.getPublicProfile(), token: req.token }); // No need to fetch user again as user has already been set to req object when auth was called 
 }
 
-// @route   PATCH api/users/me
+// @route   PATCH /users/me
 // @desc    Update profile of currently authenticated user
 // @access  Private
 exports.update = async (req, res, next) => {
@@ -31,7 +31,7 @@ exports.update = async (req, res, next) => {
     }
 }
 
-// @route   DELETE api/users/me
+// @route   DELETE /users/me
 // @desc    Delete profile of currently authenticated user
 // @access  Private
 exports.delete = async (req, res, next) => {

@@ -13,7 +13,7 @@ export const addAccount = plaidData => async dispatch => {
     console.log("addAccount is called");
     try {
         const accounts = plaidData.accounts;
-        const res = await axios.post("/item/public_token/exchange", plaidData);
+        const res = await axios.post("/item/public_token/exchange", plaidData.metadata);
         const data = await dispatch({ type: ADD_ACCOUNT, payload: res.data });
         if (accounts) {
             dispatch(getTransactions(accounts.concat(data.payload)))

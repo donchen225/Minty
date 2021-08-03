@@ -29,12 +29,13 @@ const Link = () => {
     // Add account
     const onSuccess = useCallback((public_token, metadata) => {
         console.log("handleOnSuccess is called");
+        console.log("public_token", public_token);
+        console.log("metadata", metadata);
         const plaidData = {
-            public_token,
             metadata,
             accounts
         }
-        dispatch(addAccount(plaidData)); // send public_token to server, exchange for access_token and item_id, create account doc in db and add it to store, fetch transactions for all accounts and set them to store
+        dispatch(addAccount(plaidData)); // Send public_token to server, exchange for access_token and item_id, create account doc in db and add it to store, fetch transactions for all accounts and set them to store
     }, []);
 
     const config = {

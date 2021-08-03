@@ -6,7 +6,7 @@ const Auth = require('../controllers/auth');
 const auth = require('../middlewares/auth');
 const validate = require('../middlewares/validate');
 
-// @route   POST api/users
+// @route   POST /users
 // @desc    Signup user and create new user profile
 // @access  Public
 router.post('/users', [
@@ -16,7 +16,7 @@ router.post('/users', [
     check('lastName').not().isEmpty().withMessage('Your last name is required')
 ], validate, Auth.register);
 
-// @route   POST api/users/login
+// @route   POST /users/login
 // @desc    Login user
 // @access  Public
 router.post('/users/login', [
@@ -30,28 +30,28 @@ router.post('/users/login', [
 router.post('/auth/google', Auth.googleAuth);
 
 // ===EMAIL VERIFICATION
-// @route GET api/verify/:token
+// @route GET /verify/:token
 // @desc Verify user
 // @access Public
 router.get('/verify/:token', Auth.verify);
 
-// @route POST api/resend
-// @desc Resend Verification Token
+// @route POST /auth/resend
+// @desc Resend Verification Email
 // @access Public
 router.post('/auth/resend', Auth.resendToken);
 
-// @route   POST api/auth/remove
-// @desc    Remove user's current session token from user's tokens array
+// @route   POST /auth/remove
+// @desc    Logout a specific user of a specific session
 // @access  Public
 router.post('/auth/remove', Auth.removeAuthToken);
 
-// @route   POST api/users/logout
-// @desc    Remove currently authenticated user's current session token from user's tokens array 
+// @route   POST /users/logout
+// @desc    Logout currently authenticated user of current session
 // @access  Private
 router.post('/users/logout', auth, Auth.logout);
 
-// @route   POST api/users/logoutAll
-// @desc    Remove all of user's session tokens from user's tokens array
+// @route   POST /users/logoutAll
+// @desc    Logout currently authenticated user of all sessions
 // @access  Private
 router.post('/users/logoutAll', auth, Auth.logoutAll);
 

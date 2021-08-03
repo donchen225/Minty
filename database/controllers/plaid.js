@@ -36,7 +36,7 @@ exports.exchangeToken = async (req, res) => {
     try {
         const PUBLIC_TOKEN = req.body.public_token; // Parse public token and other data from request 
         const userId = req.user._id;
-        const institution = req.body.metadata.institution;
+        const institution = req.body.institution;
         const { name, institution_id } = institution;
         console.log("public token", PUBLIC_TOKEN)
         console.log("userId", userId);

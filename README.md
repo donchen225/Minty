@@ -20,7 +20,6 @@ This project uses the following technologies:
 * Webpack for module bundling of JS and CSS files
 * Babel for JS transpiler to convert ES6+ code to ES5
 
-
 ## Visual Studio Code Plugins
 * ES7 React/Redux/JS snippets
 * Bracket Pair Colorize
@@ -79,6 +78,7 @@ Run Server
         message: string
     }
 ```
+![createTransaction](https://github.com/donchen225/Minty/tree/main/public/images/postman/createTransaction.png) 
 
 * **Route**:   *`POST`* `/users/login`
 * **Description**:    Login user
@@ -105,9 +105,10 @@ Run Server
         token: string
     }
 ```
+![loginUser](https://github.com/donchen225/Minty/tree/main/public/images/postman/loginUser.png)
 
 * **Route**:   *`POST`* `/auth/google`
-* **Description**:    Authenicate through Google 
+* **Description**:    Authenicate with Google 
 * **Access**:  Private
 * **Request Body**: 
 ```javascript
@@ -132,39 +133,48 @@ Run Server
 ```
 
 * **Route**:   *`POST`* `/users/logout`
-* **Description**:    Remove currently authenticated user's current session token from user's tokens array 
+* **Description**:    Logout currently authenticated user of current session
 * **Access**:  Private
 * **Request Body**: 
     `null`
 * **Response Body**:
+```javascript
     {
         success: true
-    }     
+    }  
+```
+![logoutUser](https://github.com/donchen225/Minty/tree/main/public/images/postman/logoutUser.png)
 
 * **Route**:   *`POST`* `/auth/remove`
-* **Description**:    Remove user's current session token from user's tokens array
+* **Description**:    Logout a specific user of a specific session
 * **Access**:  Public
 * **Request Body**: 
 ```javascript
     {
-        auth_token: string,
-        id_token: string 
+        id_token: string, 
+        auth_token: string
     }
 ```
 * **Response Body**:
+```javascript
     {
         success: true
     }
+```
+![unAuthenticateUser](https://github.com/donchen225/Minty/tree/main/public/images/postman/unAuthenticateUser.png)
 
 * **Route**:   *`POST`* `/users/logoutAll`
-* **Description**:    Remove all of user's session tokens from user's tokens array
+* **Description**:    Logout currently authenticated user of all sessions
 * **Access**:  Private
 * **Request Body**: 
     `null`
 * **Response Body**:
+```javascript
     {
         success: true
     }
+```
+![logoutAll](https://github.com/donchen225/Minty/tree/main/public/images/postman/logoutAll.png)
 
 ## Email Verification Routes
 * **Route**:    *`GET`* `/verify/:token`
@@ -177,9 +187,10 @@ Run Server
         message: string
     }
 ```
+![verifyUser](https://github.com/donchen225/Minty/tree/main/public/images/postman/verifyUser.png)
 
 * **Route**:    *`POST`* `/resend`
-* **Description**:     Resend Verification Token
+* **Description**:     Resend Verification Email
 * **Access**:   Public
 * **Request Body**: 
 ```javascript
@@ -193,6 +204,7 @@ Run Server
         message: string
     }
 ```
+![resendVerificationEmail](https://github.com/donchen225/Minty/tree/main/public/images/postman/resendVerificationEmail.png)
 
 ### User Routes
 * **Route**:   *`GET`* `/users/me`
@@ -215,6 +227,7 @@ Run Server
         token: string
     }
 ```
+![readProfile](https://github.com/donchen225/Minty/tree/main/public/images/postman/readProfile.png)
 
 * **Route**:   *`PATCH`* `/users/me`
 * **Description**:    Update profile of currently authenticated user
@@ -243,6 +256,7 @@ Run Server
         token: string
     }
 ```
+![updateUser](https://github.com/donchen225/Minty/tree/main/public/images/postman/updateUser.png)
 
 * **Route**:   *`DELETE`* `/users/me`
 * **Description**:    Delete profile of currently authenticated user
@@ -264,6 +278,7 @@ Run Server
         token: string
     }
 ```
+![deleteUser](https://github.com/donchen225/Minty/tree/main/public/images/postman/deleteUser.png)
 
 ### Password Reset Routes
 * **Route**:    *`POST`* `/auth/recover`
@@ -281,16 +296,19 @@ Run Server
         message: string
     }
 ```
+![recoverPassword](https://github.com/donchen225/Minty/tree/main/public/images/postman/recoverPassword.png)
 
 * **Route**:    *`GET`* `/auth/reset/:token`
 * **Description**:     Validate password reset token and show the password reset view
 * **Access**:   Public
 * **Params**:   `token=[string]`
 * **Response Body**:
-    `null`
+    `null`    
+
+![getPasswordResetView](https://github.com/donchen225/Minty/tree/main/public/images/postman/getPasswordResetView.png)
 
 * **Route**:    *`POST`* `/auth/reset/:token`
-* **Description**:     Reset Password
+* **Description**:     Confirm and reset password
 * **Access**:   Public
 * **Params**:   `token=[string]`
 * **Request Body**: 
@@ -305,8 +323,9 @@ Run Server
         message: string
     }
 ```
+![confirmPassword](https://github.com/donchen225/Minty/tree/main/public/images/postman/confirmPassword.png)
 
-### Plaid Routes
+### Plaid API Routes
 * **Route**:    *`POST`* `/link/token/create`
 * **Description**:     Create link token and send back to client 
 * **Access**:   Private
@@ -318,6 +337,7 @@ Run Server
         link_token: string
     }
 ```
+![createLinkToken](https://github.com/donchen225/Minty/tree/main/public/images/postman/createLinkToken.png)
 
 * **Route**:    *`POST`* `/item/public_token/exchange`
 * **Description**:     Trades public token for access token and stores credentials in database
@@ -325,9 +345,29 @@ Run Server
 * **Request Body**:
 ```javascript
     {
-        public_token: string,
-        metadata: object,
-
+        institution: {
+            name: string,
+            institution_id: string
+        },
+        account_id: string,a
+        account: {
+            id: string,
+            name: string,
+            type: string,
+            subtype: string,
+            mask: string
+        },
+        accounts: [
+            {
+                id: string,
+                mask: string,
+                name: string,
+                subtype: string,
+                type: string 
+            }
+        ],
+        link_session_id: string,
+        public_token: string
     }
 ``` 
 * **Response Body**:
@@ -370,6 +410,7 @@ Run Server
         }
     ]
 ```
+![getPlaidTransactions](https://github.com/donchen225/Minty/tree/main/public/images/postman/getPlaidTransactions.png)
 
 ### Account Routes
 * **Route**:    *`GET`* `/accounts`
@@ -389,6 +430,7 @@ Run Server
         }
     ]
 ``` 
+![getAccounts](https://github.com/donchen225/Minty/tree/main/public/images/postman/getAccounts.png)
 
 * **Route**:    *`DELETE`* `/accounts/:id`
 * **Description**:     Delete account with given id
@@ -400,6 +442,7 @@ Run Server
         success: true
     }
 ```
+![deleteAccount](https://github.com/donchen225/Minty/tree/main/public/images/postman/deleteAccount.png)
 
 ### Cash Transaction Routes
 * **Route**:   *`POST`* `/transactions`
@@ -424,6 +467,7 @@ Run Server
         type: string
     }
 ```
+![createCashTransaction](https://github.com/donchen225/Minty/tree/main/public/images/postman/createCashTransaction.png)
 
 * **Route**:   *`GET`* `/transactions`
 * **Description**:    Retrieve transactions for currently authenticated user
@@ -449,6 +493,9 @@ Run Server
         }
     ]
 ```
+![getCashTransactions1](https://github.com/donchen225/Minty/tree/main/public/images/postman/getCashTransactions1.png)
+
+![getCashTransactions2](https://github.com/donchen225/Minty/tree/main/public/images/postman/getCashTransactions2.png)
 
 * **Route**:   *`GET`* `/transactions/:id`
 * **Description**:    Retrieve transaction if transaction belongs to currently authenticated user
@@ -464,6 +511,7 @@ Run Server
         type: string
     }
 ```
+![getCashTransaction](https://github.com/donchen225/Minty/tree/main/public/images/postman/getCashTransaction.png)
 
 * **Route**:   *`PATCH`* `/transactions/:id`
 * **Description**:    Update transaction if transaction belongs to currently authenticated user
@@ -479,6 +527,7 @@ Run Server
         type: string
     }
 ```
+![updateCashTransaction](https://github.com/donchen225/Minty/tree/main/public/images/postman/updateCashTransaction.png)
 
 * **Route**:   *`DELETE`* `/transactions/:id`
 * **Description**:    Delete transaction if transaction belongs to currently authenticated user
@@ -494,3 +543,4 @@ Run Server
         type: string
     }
 ```
+![deleteCashTransaction](https://github.com/donchen225/Minty/tree/main/public/images/postman/deleteCashTransaction.png)
