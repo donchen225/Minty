@@ -79,7 +79,7 @@ Run Server
         message: string
     }
 ```
-![createTransaction](/images/postman/createTransaction.png?raw=true) 
+<img src="/public/images/postman/createTransaction.png?raw=true" alt="createTransaction" width="700">
 
 * **Route**:   *`POST`* `/users/login`
 * **Description**:    Login user
@@ -106,7 +106,7 @@ Run Server
         token: string
     }
 ```
-![loginUser](/images/postman/loginUser.png?raw=true)
+<img src="/public/images/postman/loginUser.png?raw=true" alt="loginUser" width="700">
 
 * **Route**:   *`POST`* `/auth/google`
 * **Description**:    Authenicate with Google 
@@ -144,7 +144,7 @@ Run Server
         success: true
     }  
 ```
-![logoutUser](/images/postman/logoutUser.png?raw=true)
+<img src="/public/images/postman/logoutUser.png?raw=true" alt="logoutUser" width="700">
 
 * **Route**:   *`POST`* `/auth/remove`
 * **Description**:    Logout a specific user of a specific session
@@ -162,7 +162,7 @@ Run Server
         success: true
     }
 ```
-![unAuthenticateUser](/images/postman/unAuthenticateUser.png?raw=true)
+<img src="/public/images/postman/unAuthenticateUser.png?raw=true" alt="unAuthenticateUser" width="700">
 
 * **Route**:   *`POST`* `/users/logoutAll`
 * **Description**:    Logout currently authenticated user of all sessions
@@ -175,7 +175,7 @@ Run Server
         success: true
     }
 ```
-![logoutAll](/images/postman/logoutAll.png?raw=true)
+<img src="/public/images/postman/logoutAll.png?raw=true" alt="logoutAll" width="700">
 
 ## Email Verification Routes
 * **Route**:    *`GET`* `/verify/:token`
@@ -188,7 +188,7 @@ Run Server
         message: string
     }
 ```
-![verifyUser](/images/postman/verifyUser.png?raw=true)
+<img src="/public/images/postman/verifyUser.png?raw=true" alt="verifyUser" width="700">
 
 * **Route**:    *`POST`* `/resend`
 * **Description**:     Resend Verification Email
@@ -205,7 +205,7 @@ Run Server
         message: string
     }
 ```
-![resendVerificationEmail](/images/postman/resendVerificationEmail.png?raw=true)
+<img src="/public/images/postman/resendVerificationEmail.png?raw=true" alt="resendVerificationEmail" width="700">
 
 ### User Routes
 * **Route**:   *`GET`* `/users/me`
@@ -228,7 +228,7 @@ Run Server
         token: string
     }
 ```
-![readProfile](/images/postman/readProfile.png?raw=true)
+<img src="/public/images/postman/readProfile.png?raw=true" alt="readProfile" width="700">
 
 * **Route**:   *`PATCH`* `/users/me`
 * **Description**:    Update profile of currently authenticated user
@@ -257,7 +257,7 @@ Run Server
         token: string
     }
 ```
-![updateUser](/images/postman/updateUser.png?raw=true)
+<img src="/public/images/postman/updateUser.png?raw=true" alt="updateUser" width="700">
 
 * **Route**:   *`DELETE`* `/users/me`
 * **Description**:    Delete profile of currently authenticated user
@@ -279,7 +279,7 @@ Run Server
         token: string
     }
 ```
-![deleteUser](/images/postman/deleteUser.png?raw=true)
+<img src="/public/images/postman/deleteUser.png?raw=true" alt="deleteUser" width="700">
 
 ### Password Reset Routes
 * **Route**:    *`POST`* `/auth/recover`
@@ -297,16 +297,16 @@ Run Server
         message: string
     }
 ```
-![recoverPassword](/images/postman/recoverPassword.png?raw=true)
+<img src="/public/images/postman/recoverPassword.png?raw=true" alt="recoverPassword" width="700">
 
 * **Route**:    *`GET`* `/auth/reset/:token`
 * **Description**:     Validate password reset token and show the password reset view
 * **Access**:   Public
 * **Params**:   `token=[string]`
 * **Response Body**:
-    `null`    
-
-![getPasswordResetView](/images/postman/getPasswordResetView.png?raw=true)
+    `null`   
+     
+<img src="/public/images/postman/getPasswordResetView.png?raw=true" alt="getPasswordResetView" width="700">
 
 * **Route**:    *`POST`* `/auth/reset/:token`
 * **Description**:     Confirm and reset password
@@ -324,7 +324,7 @@ Run Server
         message: string
     }
 ```
-![confirmPassword](/images/postman/confirmPassword.png?raw=true)
+<img src="/public/images/postman/confirmPassword.png?raw=true" alt="confirmPassword" width="700">
 
 ### Plaid API Routes
 * **Route**:    *`POST`* `/link/token/create`
@@ -338,7 +338,7 @@ Run Server
         link_token: string
     }
 ```
-![createLinkToken](/images/postman/createLinkToken.png?raw=true)
+<img src="/public/images/postman/createLinkToken.png?raw=true" alt="createLinkToken" width="700">
 
 * **Route**:    *`POST`* `/item/public_token/exchange`
 * **Description**:     Trades public token for access token and stores credentials in database
@@ -411,7 +411,7 @@ Run Server
         }
     ]
 ```
-![getPlaidTransactions](/images/postman/getPlaidTransactions.png?raw=true)
+<img src="/public/images/postman/getPlaidTransactions.png?raw=true" alt="getPlaidTransactions" width="700">
 
 ### Account Routes
 * **Route**:    *`GET`* `/accounts`
@@ -431,7 +431,7 @@ Run Server
         }
     ]
 ``` 
-![getAccounts](/images/postman/getAccounts.png?raw=true)
+<img src="/public/images/postman/getAccounts.png?raw=true" alt="getAccounts" width="700">
 
 * **Route**:    *`DELETE`* `/accounts/:id`
 * **Description**:     Delete account with given id
@@ -443,7 +443,7 @@ Run Server
         success: true
     }
 ```
-![deleteAccount](/images/postman/deleteAccount.png?raw=true)
+<img src="/public/images/postman/deleteAccount.png?raw=true" alt="deleteAccount" width="700">
 
 ### Cash Transaction Routes
 * **Route**:   *`POST`* `/transactions`
@@ -468,7 +468,7 @@ Run Server
         type: string
     }
 ```
-![createCashTransaction](/images/postman/createCashTransaction.png?raw=true)
+<img src="/public/images/postman/createCashTransaction.png?raw=true" alt="createCashTransaction" width="700">
 
 * **Route**:   *`GET`* `/transactions`
 * **Description**:    Retrieve transactions for currently authenticated user
@@ -494,9 +494,9 @@ Run Server
         }
     ]
 ```
-![getCashTransactions1](/images/postman/getCashTransactions1.png?raw=true)
+<img src="/public/images/postman/getCashTransactions1.png?raw=true" alt="getCashTransactions1" width="700">
 
-![getCashTransactions2](/images/postman/getCashTransactions2.png?raw=true)
+<img src="/public/images/postman/getCashTransactions2.png?raw=true" alt="getCashTransactions2" width="700">
 
 * **Route**:   *`GET`* `/transactions/:id`
 * **Description**:    Retrieve transaction if transaction belongs to currently authenticated user
@@ -512,7 +512,7 @@ Run Server
         type: string
     }
 ```
-![getCashTransaction](/images/postman/getCashTransaction.png?raw=true)
+<img src="/public/images/postman/getCashTransaction.png?raw=true" alt="getCashTransaction" width="700">
 
 * **Route**:   *`PATCH`* `/transactions/:id`
 * **Description**:    Update transaction if transaction belongs to currently authenticated user
@@ -528,7 +528,7 @@ Run Server
         type: string
     }
 ```
-![updateCashTransaction](/images/postman/updateCashTransaction.png?raw=true)
+<img src="/public/images/postman/updateCashTransaction.png?raw=true" alt="updateCashTransaction" width="700">
 
 * **Route**:   *`DELETE`* `/transactions/:id`
 * **Description**:    Delete transaction if transaction belongs to currently authenticated user
@@ -544,4 +544,4 @@ Run Server
         type: string
     }
 ```
-![deleteCashTransaction](/images/postman/deleteCashTransaction.png?raw=true)
+<img src="/public/images/postman/deleteCashTransaction.png?raw=true" alt="deleteCashTransaction" width="700">
