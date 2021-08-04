@@ -34,13 +34,13 @@ This project uses the following technologies:
 * Allow-Control-Allow-Origin
 
 ## Postman Environment Setup
-1. Create a new enironment, "Minty API" and an environment variable, "url" and set its' initial value to "localhost:1200". This way, "url" can now be used in all of our requests. 
+1. Create a new enironment, "Minty API" and an environment variable, `url` and set its' initial value to "localhost:1200". This way, `url` can now be used in all of our requests. 
 <img src="/public/images/postman/ManageEnvironmentVariables.png?raw=true" alt="ManageEnvironmentVariables" width="700">
 
-2. Create a test script to set authToken as an environment variable
+2. Create the following test script within the *`POST`* `/users/login` and *`POST`* `/auth/google` routes (the routes that will generate the "authToken" and hence authenticate the user) in order to set the `authToken` as an environment variable
 <img src="/public/images/postman/TestScriptToSetAuthToken.png?raw=true" alt="TestScriptToSetAuthToken" width="700">
 
-3. Set the authorization type to "Bearer Token" and the token to the new "authToken" environment variable 
+3. Set the authorization type to "Bearer Token" and the token to the new `authToken` environment variable 
 <img src="/public/images/postman/SetBearerTokenToAuthToken.png?raw=true" alt="SetBearerTokenToAuthToken" width="700">
 
 4. For all requests that require authentication, set the Authorization Type to "Inherit auth from parent"
