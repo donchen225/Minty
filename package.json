@@ -1,5 +1,5 @@
 {
-  "name": "banking-app",
+  "name": "minty",
   "version": "1.0.0",
   "description": "This app is used to keep track of banking accounts and their transactions",
   "main": "index.js",

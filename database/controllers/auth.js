@@ -62,7 +62,7 @@ exports.verify = async (req, res, next) => {
             user.save(function (err) {
                 if (err) return res.status(500).json({ message: err.message });
 
-                res.status(200).send("The account has been verified. Please log in.");
+                res.status(200).send({ message: "The account has been verified. Please log in." });
             });
         });
         // Delete all token documents with given user id from database

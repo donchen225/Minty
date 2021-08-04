@@ -33,6 +33,22 @@ This project uses the following technologies:
 * Redux Developer Tools
 * Allow-Control-Allow-Origin
 
+## Postman Environment Setup
+1. Create a new enironment, "Minty API dev" and an environment variable, "url" and set its' initial value to "localhost:1200". This way, "url" will now be used in our requests. 
+<img src="/public/images/postman/ManageEnvironmentVariables.png?raw=true" alt="ManageEnvironmentVariables" width="700">
+
+3. Create a test script to set authToken as an environment variable
+<img src="/public/images/postman/TestScriptToSetAuthToken.png?raw=true" alt="TestScriptToSetAuthToken" width="700">
+
+4. Set the authorization type to "Bearer Token" and the token to the new "authToken" environment variable 
+<img src="/public/images/postman/SetBearerTokenToAuthToken.png?raw=true" alt="SetBearerTokenToAuthToken" width="700">
+
+5. For all requests that require authentication, set the Authorization Type to "Inherit auth from parent"
+<img src="/public/images/postman/InheritAuthFromParent.png?raw=true" alt="InheritAuthFromParent" width="700">
+
+6. For all request that do not require authentication, set the Authorization Type to "No Auth"
+<img src="/public/images/postman/NoAuthRequired.png?raw=true" alt="NoAuthRequired" width="700">
+
 ## Configuration
 ### Mongo
 Add your own `MONGOURI` from your mLab database in `configs/keys.js`
@@ -79,7 +95,7 @@ Run Server
         message: string
     }
 ```
-<img src="/public/images/postman/createTransaction.png?raw=true" alt="createTransaction" width="700">
+<img src="/public/images/postman/createUser.png?raw=true" alt="createUser" width="700">
 
 * **Route**:   *`POST`* `/users/login`
 * **Description**:    Login user
@@ -305,7 +321,7 @@ Run Server
 * **Params**:   `token=[string]`
 * **Response Body**:
     `null`   
-     
+
 <img src="/public/images/postman/getPasswordResetView.png?raw=true" alt="getPasswordResetView" width="700">
 
 * **Route**:    *`POST`* `/auth/reset/:token`
