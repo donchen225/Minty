@@ -23,7 +23,7 @@ This project uses the following technologies:
 
 ## Visual Studio Code Plugins
 * ES7 React/Redux/JS snippets
-* Bracket Pair Colorize
+* Bracket Pair Colorizer
 * Prettier formatter for Visual Studio Code
 * Live Server
 * Node.js Modules Intellisense
@@ -34,19 +34,19 @@ This project uses the following technologies:
 * Allow-Control-Allow-Origin
 
 ## Postman Environment Setup
-1. Create a new enironment, "Minty API dev" and an environment variable, "url" and set its' initial value to "localhost:1200". This way, "url" will now be used in our requests. 
+1. Create a new enironment, "Minty API" and an environment variable, "url" and set its' initial value to "localhost:1200". This way, "url" can now be used in all of our requests. 
 <img src="/public/images/postman/ManageEnvironmentVariables.png?raw=true" alt="ManageEnvironmentVariables" width="700">
 
-3. Create a test script to set authToken as an environment variable
+2. Create a test script to set authToken as an environment variable
 <img src="/public/images/postman/TestScriptToSetAuthToken.png?raw=true" alt="TestScriptToSetAuthToken" width="700">
 
-4. Set the authorization type to "Bearer Token" and the token to the new "authToken" environment variable 
+3. Set the authorization type to "Bearer Token" and the token to the new "authToken" environment variable 
 <img src="/public/images/postman/SetBearerTokenToAuthToken.png?raw=true" alt="SetBearerTokenToAuthToken" width="700">
 
-5. For all requests that require authentication, set the Authorization Type to "Inherit auth from parent"
+4. For all requests that require authentication, set the Authorization Type to "Inherit auth from parent"
 <img src="/public/images/postman/InheritAuthFromParent.png?raw=true" alt="InheritAuthFromParent" width="700">
 
-6. For all request that do not require authentication, set the Authorization Type to "No Auth"
+5. For all request that do not require authentication, set the Authorization Type to "No Auth"
 <img src="/public/images/postman/NoAuthRequired.png?raw=true" alt="NoAuthRequired" width="700">
 
 ## Configuration

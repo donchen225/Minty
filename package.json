@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "build:dev": "webpack --watch",
-    "start": "nodemon server/index.js"
+    "build:prod": "webpack -p --env production",
+    "start": "nodemon server/index.js",
+    "heroku-postbuild": "node run build:prod"
   },
   "author": "Donald Chen",
   "license": "ISC",

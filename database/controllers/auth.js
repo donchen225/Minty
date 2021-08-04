@@ -17,8 +17,6 @@ exports.register = async (req, res, next) => {
         await sendVerificationEmail(user, req, res);
     } 
     catch (err) {
-        console.log("name", err.name);
-        console.log("code", err.code);
         next(err);
     }
 }

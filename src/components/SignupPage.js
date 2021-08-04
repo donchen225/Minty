@@ -39,7 +39,7 @@ const SignupPage = () => {
     return (
         <BoxLayout>
             <BoxLayoutBox>
-                <Title> Join Expensify </Title>
+                <Title> Join Minty </Title>
                 <Form onSubmit={onSubmit}>
                     <Input
                         placeholder="First name"
