@@ -9,6 +9,9 @@
     "start": "nodemon server/index.js",
     "heroku-postbuild": "node run build:prod"
   },
+  "engines" : { 
+    "node" : ">=8.0.0 <11.0.0" 
+  },
   "author": "Donald Chen",
   "license": "ISC",
   "dependencies": {
