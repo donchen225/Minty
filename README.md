@@ -5,21 +5,21 @@ This project will allow users to link their institutional bank accounts using th
 
 ## Technologies
 This project uses the following technologies:
-* React and React Router for the frontend
-* Express and Node for the backend
-* MongoDB and Mongoose for the database
-* Redux for state management
-* Plaid for bank account linkage and transaction data
-* Jsonwebtoken and Passport for authentication
-* Sendgrid for emails
-* Axios for HTTP client requests to backend 
-* Express-validator for server side validation and sanitization
-* Bcryptjs for hashing of passwords
-* Material-table for data table
-* Styled Components for component level styles 
-* Webpack for module bundling of JS and CSS files
-* Babel for JS transpiler to convert ES6+ code to ES5
-* Postman for testing API routes 
+* ***React*** and ***React Router*** for the frontend
+* ***Express*** and ***Node*** for the backend
+* ***MongoDB*** and ***Mongoose*** for the database
+* ***Redux*** for state management
+* ***Plaid*** for bank account linkage and transaction data
+* ***Jsonwebtoken*** and ***Passport*** for authentication
+* ***Sendgrid*** for emails
+* ***Axios*** for HTTP client requests to backend 
+* ***Express-validator*** for server side validation and sanitization
+* ***Bcryptjs*** for hashing of passwords
+* ***Material-table*** for data table
+* ***Styled Components*** for component level styles 
+* ***Webpack*** for module bundling of JS and CSS files
+* ***Babel*** for JS transpiler to convert ES6+ code to ES5
+* ***Postman*** for testing API routes 
 
 ## Visual Studio Code Plugins
 * ES7 React/Redux/JS snippets

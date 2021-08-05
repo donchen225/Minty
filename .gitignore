@@ -1,4 +1,4 @@
 node_modules
-./env
-./configs/keys
-./public/dist
+/env
+/configs/keys
+/public/dist

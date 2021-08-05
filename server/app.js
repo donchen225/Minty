@@ -20,11 +20,6 @@ app.use(express.urlencoded({ extended: false }));
 // Serve the static files from the React app
 app.use(express.static(publicPath));
 
-// Handles any requests that don't match the ones above
-app.get('*', (req, res) => { 
-    res.sendFile(path.join(publicPath, 'index.html'));
-});
-
 // app.use(passport.initialize());
 
 // require("../configs/passport");
@@ -41,5 +36,10 @@ app.use(require('../database/routers/transaction'));
 app.use(require('../database/routers/plaid'));
 app.use(require('../database/routers/account'));
 app.use(require('../database/middlewares/errors'));
+
+// Handles any requests that don't match the ones above
+app.get('*', (req, res) => { 
+    res.sendFile(path.join(publicPath, 'index.html'));
+});
 
 module.exports = app;
