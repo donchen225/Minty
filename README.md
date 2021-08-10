@@ -357,7 +357,7 @@ Run Server
 <img src="/public/images/postman/createLinkToken.png?raw=true" alt="createLinkToken" width="700">
 
 * **Route**:    *`POST`* `/item/public_token/exchange`
-* **Description**:     Trades public token for access token and stores credentials in database
+* **Description**:     Trade public token for access token, add institution to db to store access token, use the access token to fetch the institution's accounts, and add the accounts to db
 * **Access**:   Private
 * **Request Body**:
 ```javascript
@@ -366,7 +366,7 @@ Run Server
             name: string,
             institution_id: string
         },
-        account_id: string,a
+        account_id: string,
         account: {
             id: string,
             name: string,
@@ -390,16 +390,30 @@ Run Server
 * **Response Body**:
 ```javascript
     {
+        _id: string,
         ownerId: string,
+        accountId: string,
         accessToken: string,
-        itemId: string,
+        balances: {
+            available: number,
+            current: number,
+            iso_currency_code: string,
+            limit: number,
+            unofficial_currency_code: string
+        },
+        mask: number,
+        name: string,
+        officialName: string,
+        accountType: string,
+        accountSubtype: string,
         institutionId: string,
-        institutionName: string
+        institutionName: string,
+        itemId: string
     }
 ```
 
 * **Route**:    *`POST`* `/transactions/get`
-* **Description**:     Fetch transactions from past 30 days from all linked accounts from plaid API
+* **Description**:     Fetch transactions from past 30 days from all linked financial institution bank accounts using Plaid API
 * **Access**:   Private
 * **Request Body**:
 ```javascript
@@ -419,19 +433,101 @@ Run Server
         {
             accountName: string,
             transactions: [
-                date: date,
-                category: string,
-                name: string,
-                amount: integer
+                {
+                    account_id: string,
+                    account_owner: string,
+                    amount: number,
+                    authorized_date: date,
+                    authorized_datetime: date,
+                    category: [ string ],
+                    category_id: number,
+                    date: date,
+                    datetime: time,
+                    iso_currency_code: USD,
+                    location: {
+                        address: string,
+                        city: string,
+                        country: string,
+                        lat: string,
+                        lon: string,
+                        postal_code: number,
+                        region: number,
+                        store_number: number
+                    },
+                    merchant_name: string,
+                    name: string,
+                    payment_channel: string,
+                    payment_meta: {
+                        by_order_of: string,
+                        payee: string,
+                        payer: string,
+                        payment_method: string,
+                        payment_processor: string,
+                        ppd_id: string,
+                        reason: string,
+                        reference_number: number
+                    },
+                    pending: boolean,
+                    pending_transaction_id: string,
+                    transaction_code: number,
+                    transaction_id: string,
+                    transaction_type: string,
+                    unofficial_currency_code: string
+                }
             ]
         }
     ]
 ```
 <img src="/public/images/postman/getPlaidTransactions.png?raw=true" alt="getPlaidTransactions" width="700">
 
+* **Route**:    *`GET`* `/acounts/balance/get`
+* **Description**:     Get real-time balance of all linked bank accounts using Plaid API
+* **Access**:   Private
+* **Request Body**:
+```javascript
+    [
+        {
+            _id: string,
+            ownerId: string,
+            institutionId: string,
+            name: string,
+            accessToken: string
+            itemId: string
+        }
+    ]
+
+```
+* **Response Body**:
+```javascript
+    [
+        {
+            _id: string,
+            ownerId: string,
+            accountId: string,
+            accessToken: string,
+            balances: {
+                available: number,
+                current: number,
+                iso_currency_code: string,
+                limit: number,
+                unofficial_currency_code: string
+            },
+            mask: number,
+            name: string,
+            officialName: string,
+            accountType: string,
+            accountSubtype: string,
+            institutionId: string,
+            institutionName: string,
+            itemId: string
+        }
+    ]
+``` 
+<img src="/public/images/postman/getRealtimeAccountBalances.png?raw=true" alt="getRealtimeAccountBalances" width="700">
+
 ### Account Routes
-* **Route**:    *`GET`* `/accounts`
-* **Description**:     Get all accounts linked with plaid of currently authenticated user
+* **Route**:    *`GET`* `/institutions`
+* **Description**:     Get all of the currently authenticated user's linked institutions
 * **Access**:   Private
 * **Request Body**:
     `null`
@@ -439,11 +535,45 @@ Run Server
 ```javascript
     [
         {
+            _id: string,
             ownerId: string,
-            accessToken: string,
-            itemId: string,
             institutionId: string,
-            institutionName: string
+            name: string,
+            accessToken: string
+            itemId: string
+        }
+    ]
+``` 
+<img src="/public/images/postman/getLinkedInstitutions.png?raw=true" alt="getLinkedInstitutions" width="700">
+
+* **Route**:    *`GET`* `/accounts` 
+* **Description**:     Get all of the currently authenticated user's linked accounts
+* **Access**:   Private
+* **Request Body**:
+    `null`
+* **Response Body**:
+```javascript
+    [
+        {
+            _id: string,
+            ownerId: string,
+            accountId: string,
+            accessToken: string,
+            balances: {
+                available: number,
+                current: number,
+                iso_currency_code: string,
+                limit: number,
+                unofficial_currency_code: string
+            },
+            mask: number,
+            name: string,
+            officialName: string,
+            accountType: string,
+            accountSubtype: string,
+            institutionId: string,
+            institutionName: string,
+            itemId: string
         }
     ]
 ``` 
@@ -469,7 +599,7 @@ Run Server
 ```javascript
     {
         description: string,
-        amount: integer,
+        amount: number,
         date: date,
         type: string
     }
@@ -479,7 +609,7 @@ Run Server
     {
         ownerId: string,
         description: string,
-        amount: integer,
+        amount: number,
         date: date,
         type: string
     }
@@ -494,7 +624,7 @@ Run Server
     {
         category: string,
         text: string,
-        limit: integer,
+        limit: number,
         sortBy: string,
     }
 ```
@@ -504,7 +634,7 @@ Run Server
         {
             ownerId: string,
             description: string,
-            amount: integer,
+            amount: number,
             date: date,
             type: string
         }
@@ -523,7 +653,7 @@ Run Server
     {
         ownerId: string,
         description: string,
-        amount: integer,
+        amount: number,
         date: date,
         type: string
     }
@@ -539,7 +669,7 @@ Run Server
     {
         ownerId: string,
         description: string,
-        amount: integer,
+        amount: number,
         date: date,
         type: string
     }
@@ -555,7 +685,7 @@ Run Server
     {
         ownerId: string,
         description: string,
-        amount: integer,
+        amount: number,
         date: date,
         type: string
     }

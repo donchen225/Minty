@@ -1,45 +1,79 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from "react-redux";
-import Link from "./Link";
-import { getTransactions, deleteAccount } from "../actions/accounts";
+import { getPlaidTransactions, unlinkInstitution } from "../actions/accounts";
 import MaterialTable from "material-table";
 import { tableIcons } from '../fixtures/tableIcons';
 
-const Accounts = () => {
+const Accounts = ({ accounts, institutions }) => {
     const dispatch = useDispatch();
 
-    const accounts = useSelector(state => state.accounts.accounts);
     const transactionsLoading = useSelector(state => state.accounts.transactionsLoading);
-    const transactions = useSelector(state => state.accounts.transactions);
+    const plaidTransactions = useSelector(state => state.accounts.transactions);
 
     useEffect(() => {
-        dispatch(getTransactions(accounts));
+        dispatch(getPlaidTransactions(accounts));
     }, []);
 
-    // Delete account
-    const onDeleteClick = id => {
-        const accountData = {
-            id: id,
-            accounts: accounts
-        };
-        dispatch(deleteAccount(accountData));
-    };
+    // This will delete institution with given id from database, delete all accounts from institution from db, remove institution from the store, and fetch all transactions from the new list of institutions from database
+    // const onDeleteClick = (id) => {
+    //     dispatch(unlinkInstitution({ id, institutions }));
+    // };
 
+    console.log("institutions", institutions);
     console.log("accounts", accounts);
-    console.log("transactions", transactions);
+    console.log("transactions", plaidTransactions);
 
-    let accountItems = accounts.map( account => (
-        <li key={account._id} style={{ marginTop: "1rem" }}>
-            <button
-                style={{marginRight: "1rem"}}
-                onClick={() => onDeleteClick(account._id)}
-                className="btn btn-small btn-floating waves-effect waves-light hoverable red accent-3"
-            >
-                <i className="material-icons">delete</i>
-            </button>
-            <b>{account.institutionName}</b>
-        </li>
-    ));
+    const totalCash = accounts
+        .filter(account => account.accountType === "depository")
+        .map(account => account.balances.current)
+        .reduce((total, currentBalance) => (
+            total + currentBalance
+        ), 0)
+        .toFixed(2);
+    
+    const totalCredit = accounts
+        .filter(account => account.accountType === "credit")
+        .map(account => account.balances.current)
+        .reduce((total, currentBalance) => (
+            total + currentBalance
+        ), 0)
+        .toFixed(2);
+
+    const depositAccounts = accounts.map( account => {
+        if (account.accountType === "depository")
+        return (
+            <li key={account._id} style={{ marginTop: "1rem" }}>
+                <button
+                    style={{marginRight: "1rem"}}
+                    onClick={() => onDeleteClick(account._id)}
+                    className="btn btn-small btn-floating waves-effect waves-light hoverable red accent-3"
+                >
+                    <i className="material-icons">delete</i>
+                </button>
+                <b> {account.officialName ? account.officialName : account.name} </b>
+                <span> {account.institutionName} </span>
+                <span style={{marginRight: "5rem"}}> {`$${account.balances.current}`} </span>
+            </li>
+        );
+    });
+
+    const creditAccounts = accounts.map( account => {
+        if (account.accountType === "credit")
+        return (
+            <li key={account._id} style={{ marginTop: "1rem" }}>
+                <button
+                    style={{marginRight: "1rem"}}
+                    onClick={() => onDeleteClick(account._id)}
+                    className="btn btn-small btn-floating waves-effect waves-light hoverable red accent-3"
+                >
+                    <i className="material-icons">delete</i>
+                </button>
+                <b> {account.officialName ? account.officialName : account.name} </b>
+                <span> {account.institutionName} </span>
+                <span style={{marginRight: "5rem"}}> {`-$${account.balances.current}`} </span>
+            </li>
+        );
+    });
 
     // Setting up data table
     const transactionsColumns = [
@@ -51,14 +85,15 @@ const Accounts = () => {
     ];
 
     let transactionsData = [];
-    transactions.forEach((account) => {
+    plaidTransactions.forEach((account) => {
         account.transactions.forEach((transaction) => {
             transactionsData.push({
                 account: account.accountName,
                 date: transaction.date,
-                category: transaction.category[0],
+                category: transaction.category[0], 
                 name: transaction.name,
-                amount: transaction.amount
+                amount: transaction.amount,
+                merchant_name: transaction.merchant_name
             });
         });
     });
@@ -67,17 +102,20 @@ const Accounts = () => {
     return (
         <div className="row">
             <div className="col s12">
-            <h5>
-                <b>Linked Accounts</b>
-            </h5>
-            <p className="grey-text text-darken-1">
-                Add or remove your bank accounts below
-            </p>
-            <ul>{accountItems}</ul>
-            <Link/>
-            <h5>
+            <h3> All Linked Accounts </h3>
+            <div>
+                <h3 style={{ display: "inline-block", marginRight: "1rem" }}> Cash: </h3> 
+                <p style={{ display: "inline-block", marginRight: "1rem" }}> {`$${totalCash}`}</p>
+                <ul> {depositAccounts} </ul>
+            </div>
+            <div>
+                <h3 style={{ display: "inline-block", marginRight: "1rem" }}> Credit Cards: </h3>
+                <p style={{ display: "inline-block", marginRight: "1rem" }}> {`-$${totalCredit}`} </p>
+                <ul> {creditAccounts} </ul>
+            </div>
+            <h3>
                 <b>Transactions</b>
-            </h5>
+            </h3>
             {transactionsLoading ? (
                 <p className="grey-text text-darken-1">Fetching transactions...</p>
             ) : (

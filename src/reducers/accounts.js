@@ -1,14 +1,17 @@
 import {
     SET_LINK_TOKEN,
-    ADD_ACCOUNT,
-    DELETE_ACCOUNT,
-    GET_ACCOUNTS,
+    ADD_LINKED_INSTITUTION,
+    SET_LINKED_INSTITUTIONS,
+    DELETE_LINKED_INSTITUTION,
+    ADD_ACCOUNTS,
+    SET_ALL_ACCOUNTS,
     ACCOUNTS_LOADING,
-    GET_TRANSACTIONS,
-    TRANSACTIONS_LOADING
+    SET_PLAID_TRANSACTIONS,
+    PLAID_TRANSACTIONS_LOADING
 } from "../actions/types";
 
 const initialState = {
+    institutions: [],
     accounts: [],
     transactions: [],
     accountsLoading: false,
@@ -23,35 +26,45 @@ export default function(state = initialState, action) {
                 ...state,
                 linkToken: action.payload
             };
+        case ADD_LINKED_INSTITUTION:
+            return {
+                ...state,
+                institutions: [action.payload, ...state.institutions]
+            };
+        case SET_LINKED_INSTITUTIONS:
+            return {
+                ...state,
+                institutions: action.payload
+            }
+        case DELETE_LINKED_INSTITUTION:
+            return {
+                institutions: state.institutions.filter(
+                    institution => institution._id !== action.payload
+                )
+            };
+        case ADD_ACCOUNTS:
+            return {
+                ...state,
+                accountsLoading: false,
+                accounts: [action.payload, ...state.accounts]
+            }
         case ACCOUNTS_LOADING:
             return {
                 ...state,
                 accountsLoading: true
             };
-        case ADD_ACCOUNT:
-            return {
-                ...state,
-                accounts: [action.payload, ...state.accounts]
-            };
-        case DELETE_ACCOUNT:
-            return {
-                ...state,
-                accounts: state.accounts.filter(
-                    account => account._id !== action.payload
-                )
-            };
-        case GET_ACCOUNTS:
+        case SET_ALL_ACCOUNTS:
             return {
                 ...state,
                 accounts: action.payload,
                 accountsLoading: false
             };
-        case TRANSACTIONS_LOADING:
+        case PLAID_TRANSACTIONS_LOADING:
             return {
                 ...state,
                 transactionsLoading: true
             };
-        case GET_TRANSACTIONS:
+        case SET_PLAID_TRANSACTIONS:
             return {
                 ...state,
                 transactions: action.payload,

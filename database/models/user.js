@@ -5,8 +5,9 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 
 const Token = require('./token');
-const Transaction = require('./transaction');
+const Institution = require('./institution');
 const Account = require('./account');
+const Transaction = require('./transaction');
 const keys = require('../../configs/keys');
 
 // This mongoose schema validator is to ensure password does not include password and meets complexity requirement 
@@ -26,7 +27,7 @@ const passwordValidators = [
 
 ];
 
-const userSchema = new mongoose.Schema({
+const UserSchema = new mongoose.Schema({
     firstName: {
         type: String, // mongoose schema validation
         required: [ true, 'Enter your first name'], 
@@ -73,24 +74,38 @@ const userSchema = new mongoose.Schema({
     }]
 }, {
     timestamps: true
-})
+});
 
-// This will define a populated virtual, telling Mongoose to populate docs from 'Transaction' model whose foreignField (ownerId) matches the user document's localField (_id)    
-userSchema.virtual('transaction', { 
-    ref: 'Transaction', 
+// This will define a populated virtual, telling Mongoose to populate docs from 'Token' model whose foreignField (ownerId) matches the user document's localField (_id)    
+UserSchema.virtual('token', { 
+    ref: 'Token', 
     localField: '_id',
-    foreignField: 'ownerId' 
+    foreignField: 'ownerId'
 }) 
 
+// This will define a populated virtual, telling Mongoose to populate docs from 'Transaction' model whose foreignField (ownerId) matches the user document's localField (_id)    
+UserSchema.virtual('transaction', { 
+    ref: 'Transaction', 
+    localField: '_id', // Find users where `localField`
+    foreignField: 'ownerId' // is equal to `foreignField`
+}) 
+
+// This will define a populated virtual, telling Mongoose to populate docs from 'Institution' model whose foreignField (ownerId) matches the user document's localField (_id) 
+UserSchema.virtual('institution', {
+    ref: 'Institution',
+    localField: '_id',
+    foreignField: 'ownerId'
+})
+
 // This will define a populated virtual, telling Mongoose to populate docs from 'Account' model whose foreignField (ownerId) matches the user document's localField (_id) 
-userSchema.virtual('account', {
+UserSchema.virtual('account', {
     ref: 'Account',
     localField: '_id',
     foreignField: 'ownerId'
 })
 
 // Privatize the password and tokens array
-userSchema.methods.getPublicProfile = function () {
+UserSchema.methods.getPublicProfile = function () {
     console.log("getPublicProfile is called");
     const user = this;
     const userObject = user.toObject();
@@ -100,7 +115,7 @@ userSchema.methods.getPublicProfile = function () {
 }
 
 // Hash the plain test password using the bcrypt package whenever user's password changes before saving in the database
-userSchema.pre('save', async function (next) {
+UserSchema.pre('save', async function (next) {
     console.log("pre-save user function is called");
     const user = this;
     if (user.isModified('password')) { // Password will be modified when user is first created or password is changed
@@ -110,7 +125,7 @@ userSchema.pre('save', async function (next) {
 })
 
 // Generate an authentication token using the jwt package and add it to user's tokens array. This token will be returned to the client and will be required for accessing protected routes.
-userSchema.methods.generateAuthToken = async function () {
+UserSchema.methods.generateAuthToken = async function () {
     console.log("generateAuthToken is called");
     const user = this;
     // Generate jwt token with preset expiration of 30 min 
@@ -122,14 +137,14 @@ userSchema.methods.generateAuthToken = async function () {
 }
 
 // Generate password reset token using crypto package and calculate an expiry time (1 hour)
-userSchema.methods.generatePasswordResetToken = function () {
+UserSchema.methods.generatePasswordResetToken = function () {
     console.log("generatePasswordReset is called!");
     this.resetPasswordToken = crypto.randomBytes(20).toString('hex');
     this.resetPasswordExpires = Date.now() + 3600000;
 }
 
 // Generate a verification token and return an instance of the Token model
-userSchema.methods.generateVerificationToken = function () {
+UserSchema.methods.generateVerificationToken = function () {
     console.log("generateVerificationToken is called");
     const user = this;
     return new Token({
@@ -139,7 +154,7 @@ userSchema.methods.generateVerificationToken = function () {
 }
 
 // Find user with input email and then validate whether input password matches hashed password in database  
-userSchema.statics.findByCredentials = async (email, password) => {
+UserSchema.statics.findByCredentials = async (email, password) => {
     console.log('findByCredentials is called');
     const user = await User.findOne({ email });
     if (!user) {
@@ -153,10 +168,15 @@ userSchema.statics.findByCredentials = async (email, password) => {
     return user;
 }
 
-// Delete all of the user's linked accounts and cash transaction documents when a user is deleted
-userSchema.post('deleteOne', { document: true, query: false }, async function () {
+// Delete all of the user's linked institutions, accounts, and cash transaction documents before a user is deleted
+UserSchema.pre('deleteOne', { document: true, query: false }, async function () {
     console.log("pre-deleteOne user function is called");
     const user = this;
+    const deletedInstitutions = await Institution.deleteMany({ ownerId: user._id });
+    console.log("deletedInstitutions", deletedInstitutions);
+    if (!deletedInstitutions) {
+        throw new Error(`Failed to delete user's linked institutions`);
+    }
     const deletedAccounts = await Account.deleteMany({ ownerId: user._id });
     console.log("deletedAccounts", deletedAccounts);
     if (!deletedAccounts) {
@@ -169,6 +189,6 @@ userSchema.post('deleteOne', { document: true, query: false }, async function ()
     }
 })
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model('User', UserSchema);
 
 module.exports = User;

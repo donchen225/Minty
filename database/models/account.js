@@ -6,28 +6,49 @@ const AccountSchema = new mongoose.Schema({
         required: true, 
         ref: "User"
     },
+    institutionId: {
+        type: String,
+        required: true,
+        ref: "Institution"
+    },
+    plaidAccountId: {
+        type: String,
+        required: true
+    },
     accessToken: {
         type: String,
         required: true
+    },
+    balances: {
+        type: Object,
+        required: true
+    },
+    mask: {
+        type: String,
+        required: true
+    },
+    name: {
+        type: String,
+        required: true
+    },
+    officialName: {
+        type: String
+    },
+    accountType: {
+        type: String,
+        required: true
+    },
+    accountSubtype: {
+        type: String
     },
     itemId: {
         type: String,
         required: true
     },
-    institutionId: {
+    plaidInstitutionId: {
         type: String,
-        required: true
     },
     institutionName: {
-        type: String
-    },
-    accountName: {
-        type: String
-    },
-    accountType: {
-        type: String
-    },
-    accountSubtype: {
         type: String
     }
 }, {

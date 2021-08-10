@@ -1,6 +1,7 @@
 import React from 'react';
 import { useDispatch } from "react-redux";
 import { logoutUser, logoutAll } from '../actions/auth';
+import Link from "./Link";
 
 import clsx from 'clsx';
 import { useStyles } from '../styles/useStyles';
@@ -32,6 +33,7 @@ const Header = ({ handleDrawerOpen, open }) => {
                 <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
                     Dashboard
                 </Typography>
+                <Link/>
                 <IconButton color="inherit">
                     <Badge badgeContent={4} color="secondary">
                     <NotificationsIcon />

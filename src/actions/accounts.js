@@ -1,67 +1,77 @@
 import axios from '../services/index';
 import {
-    ADD_ACCOUNT,
-    DELETE_ACCOUNT,
-    GET_ACCOUNTS,
+    ADD_LINKED_INSTITUTION,
+    SET_LINKED_INSTITUTIONS,
+    DELETE_LINKED_INSTITUTION,
+    ADD_ACCOUNTS,
+    SET_ALL_ACCOUNTS,
     ACCOUNTS_LOADING,
-    GET_TRANSACTIONS,
-    TRANSACTIONS_LOADING
+    SET_PLAID_TRANSACTIONS,
+    PLAID_TRANSACTIONS_LOADING
 } from "./types";
 
-// Add account
-export const addAccount = plaidData => async dispatch => {
-    console.log("addAccount is called");
+// Link institution
+export const linkInstitution = ({ metadata, accounts }) => async dispatch => {
+    console.log("linkInstitution is called");
     try {
-        const accounts = plaidData.accounts;
-        const res = await axios.post("/item/public_token/exchange", plaidData.metadata);
-        const data = await dispatch({ type: ADD_ACCOUNT, payload: res.data });
-        if (accounts) {
-            dispatch(getTransactions(accounts.concat(data.payload)))
-        }
+        const res = await axios.post("/item/public_token/exchange", metadata);
+        console.log("initial accounts", accounts);
+        console.log("new accounts being added", res.data.accounts);
+        await dispatch({ type: ADD_LINKED_INSTITUTION, payload: res.data });
+        const newAccounts = await dispatch({ type: ADD_ACCOUNTS, payload: res.data.accounts});
+        dispatch(getTransactions(accounts.concat(newAccounts.payload)));
     } catch (e) {
         console.log(e);
     }
 };
 
-// Delete account
-export const deleteAccount = plaidData => async dispatch => {
-    console.log("deleteAccount is called");
+// Get all linked institutions of currently authenticated user
+export const getLinkedInstitutions = () => async dispatch => {
+    console.log("getLinkedInstitutions is called");
     try {
-        if (window.confirm("Are you sure you want to remove this account?"));
-        const id = plaidData.id;
-        const newAccounts = plaidData.accounts.filter( account => account._id !== id );
-        await axios.delete(`/accounts/${id}`);
-        dispatch({ type: DELETE_ACCOUNT, payload: id });
-        if (newAccounts) {
-            dispatch(getTransactions(newAccounts))
-        }
+        const res = await axios.get("/institutions");
+        dispatch({ type: SET_LINKED_INSTITUTIONS, payload: res.data });
     } catch (e) {
         console.log(e);
     }
 }
 
-// Get all linked accounts of currently authenticated user
+// Unlink institution
+export const unlinkInstitution = ({ id, institutions }) => async dispatch => {
+    console.log("unlinkInstitution is called");
+    try {
+        if (window.confirm("Are you sure you want to unlink this institution?"));
+        const newInstitutions = institutions.filter( institution => institution._id !== id );
+        await axios.delete(`/institutions/${id}`);
+        // Must delete all accounts of unlinked institution
+        dispatch({ type: DELETE_LINKED_INSTITUTION, payload: id });
+        dispatch(getTransactions(newInstitutions));
+    } catch (e) {
+        console.log(e);
+    }
+}
+
+// Get all accounts of currently authenticated user's linked institutions
 export const getAccounts = () => async dispatch => {
     console.log("getAccounts is called");
     try {
         dispatch({ type: ACCOUNTS_LOADING });
         const res = await axios.get("/accounts");
-        console.log(res.data);
-        dispatch({ type: GET_ACCOUNTS, payload: res.data });
+        dispatch({ type: SET_ALL_ACCOUNTS, payload: res.data });
     } catch (e) {
         console.log(e);
-        dispatch({ type: GET_ACCOUNTS, payload: null }); 
+        dispatch({ type: SET_ALL_ACCOUNTS, payload: null }); 
     }
 }
 
-// Get transactions
-export const getTransactions = plaidData => async dispatch => {
+// Get all transactions of all linked acounts from Plaid API
+export const getPlaidTransactions = (accounts) => async dispatch => {
     console.log("getTransactions is called");
     try {
-        dispatch({ type: TRANSACTIONS_LOADING });
-        const res = await axios.post("/transactions/get", plaidData);
-        dispatch({ type: GET_TRANSACTIONS, payload: res.data });
+        dispatch({ type: PLAID_TRANSACTIONS_LOADING });
+        const res = await axios.post("/transactions/get", accounts);
+        dispatch({ type: SET_PLAID_TRANSACTIONS, payload: res.data });
     } catch (e) {
-        dispatch({ type: GET_TRANSACTIONS, payload: null });
+        dispatch({ type: SET_PLAID_TRANSACTIONS, payload: null });
     }
 }

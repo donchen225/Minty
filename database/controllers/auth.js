@@ -21,7 +21,7 @@ exports.register = async (req, res, next) => {
     }
 }
 
-// @route   POST api/users/login
+// @route   POST /users/login
 // @desc    Login user
 // @access  Public
 exports.login = async (req, res, next) => {
@@ -39,32 +39,32 @@ exports.login = async (req, res, next) => {
 }
 
 // ===EMAIL VERIFICATION
-// @route GET /verify/:token
-// @desc Verify user
-// @access Public
+// @route   GET /verify/:token
+// @desc    Verify user
+// @access  Public
 exports.verify = async (req, res, next) => {
     if(!req.params.token) return res.status(400).json({ message: "We were unable to find a user for this token." });
     try {
         // Find matching verification token document
-        const token = await Token.findOne({ token: req.params.token });
+        const tokenDoc = await Token.findOne({ token: req.params.token });
+        if (!tokenDoc) return res.status(400).json({ message: 'We were unable to find a valid token. Your token my have expired.' });
         
-        if (!token) return res.status(400).json({ message: 'We were unable to find a valid token. Your token my have expired.' });
         // Find user with given user id 
-        await User.findOne({ _id: token.userId }, (user) => {
-            if (!user) return res.status(400).json({ message: 'We were unable to find a user for this token.' });
-            // Make sure the user is not already verified
-            if (user.isVerified) return res.status(400).json({ message: 'This user has already been verified.' });
+        const userDoc = await User.findOne({ _id: tokenDoc.userId });
+        if (!userDoc) return res.status(400).json({ message: 'We were unable to find a user for this token.' });
+        
+        // Make sure the user is not already verified
+        if (userDoc.isVerified) return res.status(400).json({ message: 'This user has already been verified.' });
 
-            // Verify and save the user
-            user.isVerified = true;
-            user.save(function (err) {
-                if (err) return res.status(500).json({ message: err.message });
+        // Verify and save the user
+        userDoc.isVerified = true;
+        userDoc.save((err) => {
+            if (err) return res.status(500).json({ message: err.message });
 
-                res.status(200).send({ message: "The account has been verified. Please log in." });
-            });
+            res.status(200).send({ message: "The account has been verified. Please log in." });
         });
         // Delete all token documents with given user id from database
-        Token.deleteMany({ _id: token.userId }, (err) => {
+        Token.deleteMany({ userId: tokenDoc.userId }, (err) => {
             if (err) return res.status(500).json({ message: err.message });
         });
     } catch (err) {
@@ -72,9 +72,9 @@ exports.verify = async (req, res, next) => {
     }
 }
 
-// @route POST /auth/resend
-// @desc Resend Verification Email
-// @access Public
+// @route   POST /auth/resend
+// @desc    Resend Verification Email
+// @access  Public
 exports.resendToken = async (req, res, next) => {
     try {
         const { email } = req.body;

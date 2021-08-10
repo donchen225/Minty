@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import Accounts from "./Accounts";
 import Link from "./Link";
-import { getAccounts } from '../actions/accounts';
+import { getLinkedInstitutions, getAccounts } from '../actions/accounts';
 
 import { useStyles } from '../styles/useStyles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -13,11 +13,13 @@ const DashboardPage = () => {
 
     const classes = useStyles();
     
+    const institutions = useSelector(state => state.accounts.institutions);
     const accounts = useSelector(state => state.accounts.accounts);
     const accountsLoading = useSelector(state => state.accounts.accountsLoading);
 
-    // Fetch linked accounts from database
+    // Fetch linked institutions and accounts from database
     useEffect(() => { 
+        dispatch(getLinkedInstitutions());
         dispatch(getAccounts());
     }, []);
 
@@ -27,10 +29,16 @@ const DashboardPage = () => {
         dashboardContent = <p> Loading... </p>
     } else if (accounts.length > 0) { 
         // User has accounts linked
-        dashboardContent = <Accounts/>
+        dashboardContent = <Accounts accounts={accounts} institutions={institutions}/>
     } else { 
         // User has no accounts linked
-        dashboardContent = <Link/>
+        dashboardContent = 
+        <div>
+            <p className="grey-text text-darken-1">
+                Add your first bank account below
+            </p>
+            <Link/>
+        </div>
     }
 
     return (
