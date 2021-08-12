@@ -489,7 +489,7 @@ Run Server
         {
             _id: string,
             ownerId: string,
-            institutionId: string,
+            plaidInstitutionId: string,
             name: string,
             accessToken: string
             itemId: string
@@ -546,6 +546,20 @@ Run Server
 ``` 
 <img src="/public/images/postman/getLinkedInstitutions.png?raw=true" alt="getLinkedInstitutions" width="700">
 
+* **Route**:    *`DELETE` `/institution/:id`
+* **Description**:     Delete a specific linked institution and all of its' accounts
+* **Access**:   Private
+* **Params**: `id={string}`
+* **Request Body**:
+    `null`
+* **Response Body**:
+```javascript
+    {
+        success: boolean
+    }
+```
+<img src="/public/images/postman/deleteLinkedInstitution.png?raw=true" alt="deleteLinkedInstitution" width="700">
+
 * **Route**:    *`GET`* `/accounts` 
 * **Description**:     Get all of the currently authenticated user's linked accounts
 * **Access**:   Private
@@ -580,7 +594,7 @@ Run Server
 <img src="/public/images/postman/getAccounts.png?raw=true" alt="getAccounts" width="700">
 
 * **Route**:    *`DELETE`* `/accounts/:id`
-* **Description**:     Delete account with given id
+* **Description**:     Delete a specific account
 * **Access**:   Private
 * **Params**:   `id = [string]`
 * **Response Body**:

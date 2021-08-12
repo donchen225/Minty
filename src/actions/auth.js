@@ -110,9 +110,8 @@ export const registerUser = (creds) => async (dispatch) => {
 export async function deleteUser (dispatch) {
     console.log('deleteUser is called');
     try {
-        await axios.delete('/users/me');
-        dispatch({ type: DELETE_USER });
-        console.log('user is deleted');
+        const res = await axios.delete('/users/me');
+        if (res) dispatch({ type: DELETE_USER });
     }
     catch (e) {
         if (e.response) {

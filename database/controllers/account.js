@@ -18,7 +18,7 @@ exports.getLinkedInstitutions = async (req, res) => {
     }
 }
 
-// @route   DELETE /institution
+// @route   DELETE /institution/:id
 // @desc    Unlink a institution
 // @access  Private
 exports.deleteLinkedInstitution = async (req, res) => {

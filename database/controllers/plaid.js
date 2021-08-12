@@ -30,8 +30,6 @@ exports.createLinkToken = async (req, res) => {
     }
 }
 
-
-
 // @route   POST /item/public_token/exchange
 // @desc    Trade public token for access token, add institution to database to store access token, use the access token to fetch the institution's accounts, and add the accounts to database
 // @access  Private
@@ -54,10 +52,11 @@ exports.linkInstitutionAndAccounts = async (req, res) => {
             const institutionDoc = await Institution.findOneAndUpdate({ 
                 ownerId: userId,
                 plaidInstitutionId: institution_id,
+                name: institution.name,
+            }, {
                 accessToken: ACCESS_TOKEN,
                 itemId: ITEM_ID,
-                name: institution.name,
-            }, {}, {
+            }, {
                 new: true,
                 upsert: true,
                 useFindAndModify: false
@@ -78,16 +77,16 @@ exports.linkInstitutionAndAccounts = async (req, res) => {
                     // if account doc already exist in database, update its data. else, create a new account doc and save to db.  
                     const accountDoc = await Account.findOneAndUpdate({
                         ownerId: userId,
-                        institutionId: institutionDoc._id,
-                        plaidInstitutionId: institution_id,
-                        accessToken: ACCESS_TOKEN,
-                        itemId: ITEM_ID,
                         name,
+                        officialName: official_name,
                         mask
                     }, {
+                        accessToken: ACCESS_TOKEN,
+                        institutionId: institutionDoc._id,
                         plaidAccountId: account_id,
+                        plaidInstitutionId: institution_id,
+                        itemId: ITEM_ID,
                         balances,
-                        officialName: official_name,
                         accountType: type,
                         accountSubtype: subtype,
                         institutionName: institution.name
@@ -103,9 +102,7 @@ exports.linkInstitutionAndAccounts = async (req, res) => {
             // update the institution doc's accounts field with all the newly created account docs 
             const institutionDocument = await Institution.findOneAndUpdate({ 
                 ownerId: userId,
-                institutionId: institution_id,
-                accessToken: ACCESS_TOKEN,
-                itemId: ITEM_ID,
+                plaidInstitutionId: institution_id,
                 name: institution.name
             }, { 
                 accounts: accountDocuments
@@ -118,7 +115,7 @@ exports.linkInstitutionAndAccounts = async (req, res) => {
         }
     } catch (e) {
         console.log(e);
-        res.status(400).send(e);
+        res.status(500).send(e);
     }
 }
 
@@ -131,11 +128,16 @@ exports.retrieveBalance = async (req, res) => {
         const { institutions } = req.body;
         // for each institution, call getBalance on its accessToken to retrieve all of its' accounts and their respective balances
         for await (let institution of institutions) {   
-            const response = await client.getBalance(institution.accessToken);
+            const ACCESS_TOKEN = institution.accessToken;
+            const response = await client.getBalance(ACCESS_TOKEN);
             console.log("response", response);
             const accounts = response.accounts;
             // Update account document with the new balance
-            await Account.findOneAndUpdate({ accountId: accounts.account_id }, { balance: accounts.balance }, { new: true, useFindAndModify: false });
+            await Account.findOneAndUpdate(
+                { accountId: accounts.account_id }, 
+                { balance: accounts.balance }, 
+                { new: true, useFindAndModify: false }
+            );
         }
         const accountsData = await Account.find({});
         res.send(accountsData);
@@ -147,29 +149,28 @@ exports.retrieveBalance = async (req, res) => {
 // @route   POST /transactions/get
 // @desc    Fetch transactions from past 30 days from all linked accounts through Plaid API
 // @access  Private
-exports.retrieveTransactions = (req, res) => {
-    const now = moment();
-    const today = now.format("YYYY-MM-DD");
-    const thirtyDaysAgo = now.subtract(30, "days").format("YYYY-MM-DD");
-    const transactions = [];
-    const accounts = req.body;
-    if (accounts) {
-        accounts.forEach((account) => {
-            const ACCESS_TOKEN = account.accessToken;
-            const institutionName = account.institutionName;
-            client.getTransactions(ACCESS_TOKEN, thirtyDaysAgo, today)
-            .then((response) => {
+exports.retrieveTransactions = async (req, res) => {
+    try {
+        const now = moment();
+        const today = now.format("YYYY-MM-DD");
+        const thirtyDaysAgo = now.subtract(30, "days").format("YYYY-MM-DD");
+        const transactions = [];
+        const institutions = req.body;
+        if (institutions) {
+            for await (let institution of institutions) {
+                const ACCESS_TOKEN = institution.accessToken;
+                const institutionName = institution.name;
+                const response = await client.getTransactions(ACCESS_TOKEN, thirtyDaysAgo, today);
                 transactions.push({
-                    accountName: institutionName,
+                    institutionName,
                     transactions: response.transactions
                 });
-                // Don't send back response till all transactions have been added
-                if (transactions.length === accounts.length) {
-                    res.json(transactions);
-                }
-            })
-            .catch((e) => console.log(e));
-        })
-    }   
+            }
+            res.send(transactions);
+        }
+    } catch (e) {
+        res.status(500).send(e);
+        console.log(e);
+    }
 }
 

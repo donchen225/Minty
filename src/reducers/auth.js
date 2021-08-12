@@ -89,8 +89,8 @@ export default (state = authReducersDefaultState, action) => {
             localStorage.removeItem('user'); 
             return {
                 ...state,
-                user: null,
-                isAuthenticated: false
+                isAuthenticated: false,
+                user: null
             }
         default:
             return state;

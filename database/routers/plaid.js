@@ -17,7 +17,7 @@ router.post("/item/public_token/exchange", auth, Plaid.linkInstitutionAndAccount
 // @route   POST /transactions/get
 // @desc    Fetch transactions from past 30 days from all linked bank accounts using Plaid API
 // @access  Private
-router.post("/transactions/get", auth, Plaid.retrieveTransactions);
+router.post("/transactions/get", Plaid.retrieveTransactions);
 
 // @route   GET /acounts/balance/get
 // @desc    Get real-time balance of all linked bank accounts using Plaid API

@@ -1,47 +1,38 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from "react-redux";
-import { getPlaidTransactions, unlinkInstitution } from "../actions/accounts";
+import { getPlaidTransactions, deleteLinkedInstitution } from "../actions/accounts";
 import MaterialTable from "material-table";
 import { tableIcons } from '../fixtures/tableIcons';
+import transitions from '@material-ui/core/styles/transitions';
 
-const Accounts = ({ accounts, institutions }) => {
+const Accounts = () => {
     const dispatch = useDispatch();
 
+    const accountsLoading = useSelector(state => state.accounts.accountsLoading);
     const transactionsLoading = useSelector(state => state.accounts.transactionsLoading);
-    const plaidTransactions = useSelector(state => state.accounts.transactions);
+    const institutions = useSelector(state => state.accounts.institutions);
+    const accounts = useSelector(state => state.accounts.accounts);
+    const transactions = useSelector(state => state.accounts.transactions);
 
-    useEffect(() => {
-        dispatch(getPlaidTransactions(accounts));
-    }, []);
-
-    // This will delete institution with given id from database, delete all accounts from institution from db, remove institution from the store, and fetch all transactions from the new list of institutions from database
-    // const onDeleteClick = (id) => {
-    //     dispatch(unlinkInstitution({ id, institutions }));
-    // };
-
-    console.log("institutions", institutions);
-    console.log("accounts", accounts);
-    console.log("transactions", plaidTransactions);
-
-    const totalCash = accounts
+    const totalCash = useSelector(state => state.accounts.accounts
         .filter(account => account.accountType === "depository")
         .map(account => account.balances.current)
         .reduce((total, currentBalance) => (
             total + currentBalance
         ), 0)
-        .toFixed(2);
-    
-    const totalCredit = accounts
+        .toFixed(2));
+
+    const totalCredit = useSelector(state => state.accounts.accounts
         .filter(account => account.accountType === "credit")
         .map(account => account.balances.current)
         .reduce((total, currentBalance) => (
             total + currentBalance
         ), 0)
-        .toFixed(2);
+        .toFixed(2));
 
-    const depositAccounts = accounts.map( account => {
-        if (account.accountType === "depository")
-        return (
+    const depositAccountItems = useSelector(state => state.accounts.accounts
+        .filter(account => account.accountType === "depository"))
+        .map(account => (
             <li key={account._id} style={{ marginTop: "1rem" }}>
                 <button
                     style={{marginRight: "1rem"}}
@@ -54,12 +45,11 @@ const Accounts = ({ accounts, institutions }) => {
                 <span> {account.institutionName} </span>
                 <span style={{marginRight: "5rem"}}> {`$${account.balances.current}`} </span>
             </li>
-        );
-    });
+        ));
 
-    const creditAccounts = accounts.map( account => {
-        if (account.accountType === "credit")
-        return (
+    const creditAccountItems = useSelector(state => state.accounts.accounts
+        .filter(account => account.accountType === "credit"))
+        .map(account => (
             <li key={account._id} style={{ marginTop: "1rem" }}>
                 <button
                     style={{marginRight: "1rem"}}
@@ -70,56 +60,67 @@ const Accounts = ({ accounts, institutions }) => {
                 </button>
                 <b> {account.officialName ? account.officialName : account.name} </b>
                 <span> {account.institutionName} </span>
-                <span style={{marginRight: "5rem"}}> {`-$${account.balances.current}`} </span>
+                <span style={{marginRight: "5rem"}}> {`$${account.balances.current}`} </span>
             </li>
-        );
-    });
+        ));
 
-    // Setting up data table
-    const transactionsColumns = [
-        { title: "Account", field: "account" },
-        { title: "Date", field: "date", type: "date", defaultSort: "desc" },
-        { title: "Name", field: "name" },
-        { title: "Amount", field: "amount" },
-        { title: "Category", field: "category" }
-    ];
+    useEffect(() => {
+        dispatch(getPlaidTransactions(institutions));
+    }, []);
 
-    let transactionsData = [];
-    plaidTransactions.forEach((account) => {
-        account.transactions.forEach((transaction) => {
+    // This will delete linked institution with given id and all of its accounts from database before fetch all transactions from the new list of institutions from database
+    const onDeleteClick = (id) => {
+        dispatch(deleteLinkedInstitution({ id, institutions }));
+    };
+
+    const transactionsData = [];
+    transactions && transactions.forEach((institution) => {
+        institution.transactions.forEach((transaction) => {
             transactionsData.push({
-                account: account.accountName,
+                institution: institution.institutionName,
                 date: transaction.date,
                 category: transaction.category[0], 
                 name: transaction.name,
                 amount: transaction.amount,
-                merchant_name: transaction.merchant_name
+                merchant: transaction.merchant_name || "Unknown"
             });
         });
     });
+
+    // Setting up data table
+    const transactionsColumns = [
+        { title: "Institution", field: "institution" },
+        { title: "Date", field: "date", type: "date", defaultSort: "desc" },
+        { title: "Name", field: "name" },
+        { title: "Amount", field: "amount" },
+        { title: "Category", field: "category" },
+        { title: "Merchant", field: "merchant" }
+    ];
+
+    console.log("institutions", institutions);
+    console.log("accounts", accounts);
+    console.log("plaid transactions", transactions);
     console.log("transactionsData", transactionsData);
 
     return (
         <div className="row">
             <div className="col s12">
-            <h3> All Linked Accounts </h3>
-            <div>
-                <h3 style={{ display: "inline-block", marginRight: "1rem" }}> Cash: </h3> 
-                <p style={{ display: "inline-block", marginRight: "1rem" }}> {`$${totalCash}`}</p>
-                <ul> {depositAccounts} </ul>
-            </div>
-            <div>
-                <h3 style={{ display: "inline-block", marginRight: "1rem" }}> Credit Cards: </h3>
-                <p style={{ display: "inline-block", marginRight: "1rem" }}> {`-$${totalCredit}`} </p>
-                <ul> {creditAccounts} </ul>
-            </div>
-            <h3>
-                <b>Transactions</b>
-            </h3>
-            {transactionsLoading ? (
+            { !accountsLoading &&
+                <div>
+                    <h3 style={{ display: "inline-block", marginRight: "1rem" }}> Cash: </h3> 
+                    <p style={{ display: "inline-block", marginRight: "1rem" }}> {`$${totalCash}`}</p>
+                    <ul> {depositAccountItems} </ul>
+                    
+                    <h3 style={{ display: "inline-block", marginRight: "1rem" }}> Credit Cards: </h3>
+                    <p style={{ display: "inline-block", marginRight: "1rem" }}> {`-$${totalCredit}`} </p>
+                    <ul> {creditAccountItems} </ul>
+                </div> 
+            }
+            {  transactionsLoading ? (
                 <p className="grey-text text-darken-1">Fetching transactions...</p>
             ) : (
                 <>
+                    <h3> <b>Transactions</b> </h3>
                     <p className="grey-text text-darken-1">
                         You have <b>{transactionsData.length}</b> transactions from your
                         <b> {accounts.length}</b> linked
@@ -150,4 +151,3 @@ const Accounts = ({ accounts, institutions }) => {
 }
 
 export default Accounts;
-

@@ -11,15 +11,15 @@ import {
 } from "./types";
 
 // Link institution
-export const linkInstitution = ({ metadata, accounts }) => async dispatch => {
+export const linkInstitution = ({ metadata, institutions }) => async dispatch => {
     console.log("linkInstitution is called");
     try {
         const res = await axios.post("/item/public_token/exchange", metadata);
-        console.log("initial accounts", accounts);
-        console.log("new accounts being added", res.data.accounts);
-        await dispatch({ type: ADD_LINKED_INSTITUTION, payload: res.data });
-        const newAccounts = await dispatch({ type: ADD_ACCOUNTS, payload: res.data.accounts});
-        dispatch(getTransactions(accounts.concat(newAccounts.payload)));
+        console.log("initial list of institutions:", institutions);
+        console.log("new institution added:", res.data);
+        const newInstitution = await dispatch({ type: ADD_LINKED_INSTITUTION, payload: res.data });
+        await dispatch({ type: ADD_ACCOUNTS, payload: res.data.accounts});
+        dispatch(getPlaidTransactions(institutions.concat(newInstitution.payload)));
     } catch (e) {
         console.log(e);
     }
@@ -36,8 +36,8 @@ export const getLinkedInstitutions = () => async dispatch => {
     }
 }
 
-// Unlink institution
-export const unlinkInstitution = ({ id, institutions }) => async dispatch => {
+// Delete linked institution
+export const deleteLinkedInstitution = ({ id, institutions }) => async dispatch => {
     console.log("unlinkInstitution is called");
     try {
         if (window.confirm("Are you sure you want to unlink this institution?"));
@@ -45,7 +45,8 @@ export const unlinkInstitution = ({ id, institutions }) => async dispatch => {
         await axios.delete(`/institutions/${id}`);
         // Must delete all accounts of unlinked institution
         dispatch({ type: DELETE_LINKED_INSTITUTION, payload: id });
-        dispatch(getTransactions(newInstitutions));
+        dispatch(getAccounts());
+        dispatch(getPlaidTransactions(newInstitutions));
     } catch (e) {
         console.log(e);
     }
@@ -64,12 +65,12 @@ export const getAccounts = () => async dispatch => {
     }
 }
 
-// Get all transactions of all linked acounts from Plaid API
-export const getPlaidTransactions = (accounts) => async dispatch => {
-    console.log("getTransactions is called");
+// Get all transactions of all linked institutions from Plaid API
+export const getPlaidTransactions = (institutions) => async dispatch => {
+    console.log("getPlaidTransactions is called", institutions);
     try {
         dispatch({ type: PLAID_TRANSACTIONS_LOADING });
-        const res = await axios.post("/transactions/get", accounts);
+        const res = await axios.post("/transactions/get", institutions);
         dispatch({ type: SET_PLAID_TRANSACTIONS, payload: res.data });
     } catch (e) {
         dispatch({ type: SET_PLAID_TRANSACTIONS, payload: null });

@@ -9,8 +9,8 @@ module.exports = {
     GOOGLE_API_KEY: "AIzaSyBG-uCaaYFQp3vQ3xafPcvORx6MEXujuY4",
     GOOGLE_CLIENT_ID: "441437447866-ri147dqfilumrqusmbvu4mnc9lsag1o9.apps.googleusercontent.com",
     GOOGLE_CLIENT_SECRET: "NVlshZuOYSLITYsRqzl42s0e",
-    SENDGRID_API_KEY_ID: "IUFR5uQlQh-TYuEHYVYrJg",
-    SENDGRID_API_KEY: "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",
-    fromEmail: "donaldchen225@gmail.com"
+    SENDGRID_API_KEY_ID: "iuxa6-DgS-OkQIR1nXsT-w",
+    SENDGRID_API_KEY: "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",
+    fromEmail: "donaldchen522@gmail.com"
 };
 

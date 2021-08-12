@@ -13,7 +13,6 @@ const DashboardPage = () => {
 
     const classes = useStyles();
     
-    const institutions = useSelector(state => state.accounts.institutions);
     const accounts = useSelector(state => state.accounts.accounts);
     const accountsLoading = useSelector(state => state.accounts.accountsLoading);
 
@@ -29,7 +28,7 @@ const DashboardPage = () => {
         dashboardContent = <p> Loading... </p>
     } else if (accounts.length > 0) { 
         // User has accounts linked
-        dashboardContent = <Accounts accounts={accounts} institutions={institutions}/>
+        dashboardContent = <Accounts/>
     } else { 
         // User has no accounts linked
         dashboardContent = 

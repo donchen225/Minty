@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Account = require('./account');
 
 const InstitutionSchema = new mongoose.Schema({
     ownerId: {
@@ -37,7 +38,7 @@ InstitutionSchema.virtual('account', {
     foreignField: 'institutionId'
 })
 
-// Delete all of a linked institution's account documents before the institution is deleted
+// Delete all of a linked institution's account documents before linked institution is deleted
 InstitutionSchema.pre('deleteOne', { document: true, query: false }, async function () {
     console.log("pre-deleteOne transaction function is called");
     const institution = this;
