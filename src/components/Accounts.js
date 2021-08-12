@@ -64,6 +64,23 @@ const Accounts = () => {
             </li>
         ));
 
+    const transactionsData = useSelector(state => {
+        const result = [];
+        state.accounts.transactions.forEach((institution) => {
+            institution.transactions.forEach((transaction) => {
+                result.push({
+                    institution: institution.institutionName,
+                    date: transaction.date,
+                    category: transaction.category[0], 
+                    name: transaction.name,
+                    amount: transaction.amount,
+                    merchant: transaction.merchant_name || "Unknown"
+                });
+            });
+        })
+        return result;
+    });
+
     useEffect(() => {
         dispatch(getPlaidTransactions(institutions));
     }, []);
@@ -72,20 +89,6 @@ const Accounts = () => {
     const onDeleteClick = (id) => {
         dispatch(deleteLinkedInstitution({ id, institutions }));
     };
-
-    const transactionsData = [];
-    transactions && transactions.forEach((institution) => {
-        institution.transactions.forEach((transaction) => {
-            transactionsData.push({
-                institution: institution.institutionName,
-                date: transaction.date,
-                category: transaction.category[0], 
-                name: transaction.name,
-                amount: transaction.amount,
-                merchant: transaction.merchant_name || "Unknown"
-            });
-        });
-    });
 
     // Setting up data table
     const transactionsColumns = [
